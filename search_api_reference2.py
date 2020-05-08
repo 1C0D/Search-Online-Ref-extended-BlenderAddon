@@ -52,9 +52,10 @@ class TEXT_OT_online_reference(Operator):
             current_character = text.current_character
             select_end_character = text.select_end_character
 
-            if current_character == select_end_character:            
-                bpy.ops.text.select_word()
-                bpy.ops.text.copy()
+            if current_line == select_end_line:
+	            if current_character == select_end_character:            
+                    bpy.ops.text.select_word()
+                    bpy.ops.text.copy()
             else:
                 bpy.ops.text.copy()
 

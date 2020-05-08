@@ -3,12 +3,11 @@ from bpy.types import Operator
 from bpy.props import (
     EnumProperty,StringProperty
 )
-import os
 
 bl_info = {
     "name": "Search Online Reference",
     "description": "Search Online reference",
-    "author": "tintwotin",
+    "author": "tintwotin/1C0D",
     "version": (1, 1),
     "blender": (2, 83, 0),
     "location": "Text Editor > Edit > Search API Reference",
@@ -16,9 +15,6 @@ bl_info = {
     "tracker_url": "",
     "category": "Text Editor"}
 
-def addToClipBoard(text):
-    command = 'echo | set /p nul=' + text.strip() + '| clip'
-    os.system(command)
 
 class TEXT_OT_online_reference(Operator):
     '''Search for current word or selection online'''
@@ -39,52 +35,97 @@ class TEXT_OT_online_reference(Operator):
              ),
              default={'API'},
         )
+        
     s: StringProperty(default='')
 
+    def execute(self, context): 
+        
+        s=self.s        
 
-    def execute(self, context):
+        if context.area.type == 'TEXT_EDITOR':  
+            
+            text = context.space_data.text
+            s = self.get_selected_text(text)
+            
+            if s is None:
+                bpy.ops.text.select_word()
+                s = self.get_selected_text(text)
 
-        addToClipBoard('') ##empty clipboard     
-
-        if context.area.type == 'TEXT_EDITOR':
-            text=context.space_data.text
-
-            current_character = text.current_character
-            select_end_character = text.select_end_character
-
-            if current_line == select_end_line:
-	            if current_character == select_end_character:            
-                    bpy.ops.text.select_word()
-                    bpy.ops.text.copy()
-            else:
-                bpy.ops.text.copy()
-
-        if context.area.type == 'CONSOLE':            
+        if context.area.type == 'CONSOLE':
+            
+            s=self.s            
             sc=context.space_data      
-
-            if sc.select_start==sc.select_end:
+            
+            if sc.select_start==sc.select_end or sc.select_start==sc.select_end+1:
                 self.report({'WARNING'}, "Selection is missing")
 
                 return {'CANCELLED'}
             else:
                 bpy.ops.console.copy() 
-
-
-        self.s = bpy.context.window_manager.clipboard
+                s = bpy.context.window_manager.clipboard
 
 
         if self.type == {'API'}:
-            bpy.ops.wm.url_open(url="https://docs.blender.org/api/2.80/search.html?q="+self.s)
+            bpy.ops.wm.url_open(url="https://docs.blender.org/api/2.80/search.html?q="+s)
         if self.type == {'STACKEXCHANGE'}:
-            bpy.ops.wm.url_open(url="https://blender.stackexchange.com/search?q="+self.s)
+            bpy.ops.wm.url_open(url="https://blender.stackexchange.com/search?q="+s)
         if self.type == {'PYTHON'}:
-            bpy.ops.wm.url_open(url="https://docs.python.org/3/search.html?q="+self.s)
+            bpy.ops.wm.url_open(url="https://docs.python.org/3/search.html?q="+s)
         if self.type == {'SOURCECODE'}:
-            bpy.ops.wm.url_open(url="https://developer.blender.org/diffusion/B/browse/master/?grep="+self.s)
+            bpy.ops.wm.url_open(url="https://developer.blender.org/diffusion/B/browse/master/?grep="+s)
         if self.type == {'GITHUB'}:
-            bpy.ops.wm.url_open(url="https://www.google.com/search?q=intext%3A%22"+self.s+"%22+ext%3Apy+bpy+site%3Agithub.com")
+            bpy.ops.wm.url_open(url="https://www.google.com/search?q=intext%3A%22"+s+"%22+ext%3Apy+bpy+site%3Agithub.com")
 
         return {'FINISHED'}
+
+
+    def get_selected_text(self, text):
+
+        current_line = text.current_line
+        select_end_line = text.select_end_line
+
+        current_character = text.current_character
+        select_end_character = text.select_end_character
+
+        # if there is no selected text return None
+        if current_line == select_end_line:
+            if current_character == select_end_character:
+                return None
+            else:
+                return current_line.body[min(current_character, select_end_character):max(current_character, select_end_character)]
+
+        text_return = None
+        writing = False
+        normal_order = True  # selection from top to bottom
+
+        for line in text.lines:
+            if not writing:
+                if line == current_line:
+                    text_return = current_line.body[current_character:] + "\n"
+                    writing = True
+                    continue
+                elif line == select_end_line:
+                    text_return = select_end_line.body[select_end_character:] + "\n"
+                    writing = True
+                    normal_order = False
+                    continue
+            else:
+                if normal_order:
+                    if line == select_end_line:
+                        text_return += select_end_line.body[:select_end_character]
+                        break
+                    else:
+                        text_return += line.body + "\n"
+                        continue
+                else:
+                    if line == current_line:
+                        text_return += current_line.body[:current_character]
+                        break
+                    else:
+                        text_return += line.body + "\n"
+                        continue
+
+        return text_return
 
 
 def panel_append(self, context):

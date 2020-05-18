@@ -8,7 +8,7 @@ bl_info = {
     "name": "Search Online Reference",
     "description": "Search Online reference",
     "author": "tintwotin/1C0D",
-    "version": (1, 1),
+    "version": (1, 2),
     "blender": (2, 83, 0),
     "location": "Text Editor > Edit > Search API Reference",
     "wiki_url": "https://github.com/tin2tin/Search-API-Reference",
@@ -63,6 +63,13 @@ class TEXT_OT_online_reference(Operator):
             else:
                 bpy.ops.console.copy() 
                 s = bpy.context.window_manager.clipboard
+                
+        if context.area.type == 'INFO':
+        
+            s=self.s            
+            sc=context.space_data    
+            bpy.ops.info.report_copy()
+            s = bpy.context.window_manager.clipboard
 
 
         if self.type == {'API'}:
@@ -137,12 +144,17 @@ def register():
     bpy.utils.register_class(TEXT_OT_online_reference)
     bpy.types.TEXT_MT_edit.append(panel_append)
     bpy.types.TEXT_MT_context_menu.append(panel_append)
+    bpy.types.CONSOLE_MT_context_menu.append(panel_append)
+    bpy.types.INFO_MT_context_menu.append(panel_append)
     bpy.types.CONSOLE_MT_console.append(panel_append)
+
 
 def unregister():
     bpy.utils.unregister_class(TEXT_OT_online_reference)
     bpy.types.TEXT_MT_edit.remove(panel_append)
     bpy.types.TEXT_MT_context_menu.remove(panel_append)
+    bpy.types.CONSOLE_MT_context_menu.remove(panel_append)    
+    bpy.types.INFO_MT_context_menu.remove(panel_append)
     bpy.types.CONSOLE_MT_console.remove(panel_append)
 
 

@@ -42,7 +42,7 @@ class TEXT_OT_online_reference(Operator):
         
         s=self.s        
 
-        if context.area.type == 'TEXT_EDITOR':  
+        if context.area.type == 'TEXT_EDITOR' and context.space_data.text: 
             
             text = context.space_data.text
             s = self.get_selected_text(text)

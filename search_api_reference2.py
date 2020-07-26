@@ -8,7 +8,7 @@ bl_info = {
     "name": "Search Online Reference",
     "description": "Search Online reference",
     "author": "tintwotin/1C0D",
-    "version": (1, 2),
+    "version": (1, 3),
     "blender": (2, 83, 0),
     "location": "Text Editor > Edit > Search API Reference",
     "wiki_url": "https://github.com/tin2tin/Search-API-Reference",
@@ -73,7 +73,7 @@ class TEXT_OT_online_reference(Operator):
 
 
         if self.type == {'API'}:
-            bpy.ops.wm.url_open(url="https://docs.blender.org/api/2.80/search.html?q="+s)
+            bpy.ops.wm.url_open(url="https://docs.blender.org/api/2.83/search.html?q="+s)
         if self.type == {'STACKEXCHANGE'}:
             bpy.ops.wm.url_open(url="https://blender.stackexchange.com/search?q="+s)
         if self.type == {'PYTHON'}:

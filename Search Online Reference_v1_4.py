@@ -8,7 +8,7 @@ bl_info = {
     "name": "Search Online Reference",
     "description": "Search Online reference",
     "author": "tintwotin/1C0D",
-    "version": (1, 3),
+    "version": (1, 4),
     "blender": (2, 83, 0),
     "location": "Text Editor > Edit > Search API Reference",
     "wiki_url": "https://github.com/tin2tin/Search-API-Reference",
@@ -42,7 +42,7 @@ class TEXT_OT_online_reference(Operator):
         
         s=self.s        
 
-        if context.area.type == 'TEXT_EDITOR' and context.space_data.text: 
+        if context.area.type == 'TEXT_EDITOR' and context.space_data.text:  
             
             text = context.space_data.text
             s = self.get_selected_text(text)
@@ -54,7 +54,7 @@ class TEXT_OT_online_reference(Operator):
         if context.area.type == 'CONSOLE':
             
             s=self.s            
-            sc=context.space_data      
+            sc=context.space_data 
             
             if sc.select_start==sc.select_end or sc.select_start==sc.select_end+1:
                 self.report({'WARNING'}, "Selection is missing")
@@ -62,7 +62,7 @@ class TEXT_OT_online_reference(Operator):
                 return {'CANCELLED'}
             else:
                 bpy.ops.console.copy() 
-                s = bpy.context.window_manager.clipboard
+                s = bpy.context.window_manager.clipboard                    
                 
         if context.area.type == 'INFO':
         
@@ -70,7 +70,6 @@ class TEXT_OT_online_reference(Operator):
             sc=context.space_data    
             bpy.ops.info.report_copy()
             s = bpy.context.window_manager.clipboard
-
 
         if self.type == {'API'}:
             bpy.ops.wm.url_open(url="https://docs.blender.org/api/2.83/search.html?q="+s)
@@ -138,6 +137,21 @@ class TEXT_OT_online_reference(Operator):
 def panel_append(self, context):
     self.layout.separator()
     self.layout.operator_menu_enum("text.online_reference", "type")
+    
+#see all actions in info    
+def update_toggle_see_all_actions(self, context):
+    
+    bpy.app.debug_wm ^= True
+
+bpy.types.Scene.toggle_see_all_actions = bpy.props.BoolProperty(
+    update=update_toggle_see_all_actions
+)    
+    
+def panel1_append(self, context):
+
+    self.layout.separator()
+    row = self.layout.row()
+    row.prop(context.scene, "toggle_see_all_actions", text="see all actions", icon='HIDE_OFF', toggle=True)
 
 
 def register():
@@ -146,6 +160,7 @@ def register():
     bpy.types.TEXT_MT_context_menu.append(panel_append)
     bpy.types.CONSOLE_MT_context_menu.append(panel_append)
     bpy.types.INFO_MT_context_menu.append(panel_append)
+    bpy.types.INFO_HT_header.append(panel1_append)
     bpy.types.CONSOLE_MT_console.append(panel_append)
 
 
@@ -155,6 +170,7 @@ def unregister():
     bpy.types.TEXT_MT_context_menu.remove(panel_append)
     bpy.types.CONSOLE_MT_context_menu.remove(panel_append)    
     bpy.types.INFO_MT_context_menu.remove(panel_append)
+    bpy.types.INFO_HT_header.remove(panel1_append)    
     bpy.types.CONSOLE_MT_console.remove(panel_append)
 
 

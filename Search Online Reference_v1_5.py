@@ -8,8 +8,8 @@ bl_info = {
     "name": "Search Online Reference",
     "description": "Search Online reference",
     "author": "tintwotin/1C0D",
-    "version": (1, 4),
-    "blender": (2, 83, 0),
+    "version": (1, 5),
+    "blender": (2, 90, 0),
     "location": "Text Editor > Edit > Search API Reference",
     "wiki_url": "https://github.com/tin2tin/Search-API-Reference",
     "tracker_url": "",
@@ -72,7 +72,7 @@ class TEXT_OT_online_reference(Operator):
             s = bpy.context.window_manager.clipboard
 
         if self.type == {'API'}:
-            bpy.ops.wm.url_open(url="https://docs.blender.org/api/2.83/search.html?q="+s)
+            bpy.ops.wm.url_open(url="https://docs.blender.org/api/2.90/search.html?q="+s)
         if self.type == {'STACKEXCHANGE'}:
             bpy.ops.wm.url_open(url="https://blender.stackexchange.com/search?q="+s)
         if self.type == {'PYTHON'}:
@@ -80,7 +80,8 @@ class TEXT_OT_online_reference(Operator):
         if self.type == {'SOURCECODE'}:
             bpy.ops.wm.url_open(url="https://developer.blender.org/diffusion/B/browse/master/?grep="+s)
         if self.type == {'GITHUB'}:
-            bpy.ops.wm.url_open(url="https://www.google.com/search?q=intext%3A%22"+s+"%22+ext%3Apy+bpy+site%3Agithub.com")
+            # bpy.ops.wm.url_open(url="https://www.google.com/search?q=intext%3A%22"+s+"%22+ext%3Apy+bpy+site%3Agithub.com")
+            bpy.ops.wm.url_open(url="https://github.com/search?l=Python&q="+s+"&type=code")
 
         return {'FINISHED'}
 

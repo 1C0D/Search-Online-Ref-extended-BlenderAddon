@@ -72,7 +72,7 @@ class TEXT_OT_online_reference(Operator):
             s = bpy.context.window_manager.clipboard
 
         if self.type == {'API'}:
-            bpy.ops.wm.url_open(url="https://docs.blender.org/api/2.93/search.html?q="+s)
+            bpy.ops.wm.url_open(url="https://docs.blender.org/api/current/search.html?q="+s)
         if self.type == {'STACKEXCHANGE'}:
             bpy.ops.wm.url_open(url="https://blender.stackexchange.com/search?q="+s)
         if self.type == {'PYTHON'}:
